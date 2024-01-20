@@ -3,14 +3,11 @@
 <div class="page-container">
     <MudGrid Spacing="2" Style="height: 100%; flex-grow: 1">
         <MudItem Class="page-part-container" xs="8">
-            <MudPaper Style="width: 100%; height: 100%; display: flex; flex-direction: column;">
-                <h1>BUILDER</h1>
-            </MudPaper>
+            @BuildBuilderView()
         </MudItem>
 
-        @* <MudItem Class="page-part-container" xs="4"> *@
-        <MudItem xs="4">
-            <MudPaper Style="width: 100%; height: 100%; display: flex; flex-direction: column;">
+        <MudItem Class="page-part-container" xs="4">
+            <MudPaper Style="display: flex; flex-grow: 1; height: 100%;">
                 <h1>PREVIEW</h1>
             </MudPaper>
         </MudItem>
@@ -18,5 +15,63 @@
 </div>
 
 @code {
+
+    [Inject] ILogger<PdfBuilder> Logger { get; init; }
+
+    private RenderFragment BuildBuilderView() => __builder =>
+    {
+        <MudDropContainer T="DropItem" Items="_items" ItemsSelector="@((item, dropzone) => item.Identifier == dropzone)"
+                          ItemDropped="@ItemUpdated" Class="d-flex flex-wrap flex-grow-1" Style="height: 100%">
+            <ChildContent>
+                <MudStack Row Spacing="2" Class="d-flex flex-grow-1">
+                    <MudItem xs="4">
+                        <MudDropZone T="DropItem" Identifier="templates" Style="background-color: lightgrey; flex-grow: 1; height: 100%">
+                        </MudDropZone>
+                    </MudItem>
+                    <MudItem xs="8">
+                        <MudDropZone T="DropItem" Identifier="builder" AllowReorder Style="background-color: red; flex-grow: 1; height: 100%">
+                        </MudDropZone>
+                    </MudItem>
+                </MudStack>
+            </ChildContent>
+            <ItemRenderer>
+                <MudPaper Elevation="25" Class="pa-4 mb-4">@context.Name</MudPaper>
+            </ItemRenderer>
+
+        </MudDropContainer>
+    };
+
+    private void ItemUpdated(MudItemDropInfo<DropItem> dropItem)
+    {
+        Logger.LogInformation("Item dropped START");
+        dropItem.Item.Identifier = dropItem.DropzoneIdentifier;
+        dropItem.Item.Order = dropItem.IndexInZone;
+
+        var orderedItemsInBuilderZone = _items
+                                        .Where(x => x.Identifier == "builder")
+                                        .OrderBy(x => x.Order);
+        Logger.LogInformation("Item dropped. Order of items in in the builder area: {itemsInOrder}",
+                              string.Join("\n", orderedItemsInBuilderZone.Select(item => $"{item.Order}: {item.Name}")));
+    }
+
+    private List<DropItem> _items = new()
+    {
+        new DropItem
+            { Order = 1, Name = "Drag me!", Identifier = "templates" },
+        new DropItem
+            { Order = 2, Name = "Or me!", Identifier = "templates" },
+        new DropItem
+            { Order = 3, Name = "Just Mud", Identifier = "templates" }
+    };
+
+
+    public class DropItem
+    {
+        public int Order { get; set; }
+
+        public string Name { get; init; }
+
+        public string Identifier { get; set; }
+    }
 
 }

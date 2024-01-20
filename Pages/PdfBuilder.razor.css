@@ -7,8 +7,5 @@
 .page-part-container {
     display: flex;
     flex-grow: 1; /* Grow to fill the container */
-    flex-direction: column;
     overflow: hidden; /* Hide overflow */
-    width: 100%;
-    height: 100%;
 }
