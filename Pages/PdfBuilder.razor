@@ -16,11 +16,11 @@
 
 @code {
 
-    [Inject] ILogger<PdfBuilder> Logger { get; init; }
+    [Inject] ILogger<PdfBuilder> Logger { get; init; } = null!;
 
     private RenderFragment BuildBuilderView() => __builder =>
     {
-        <MudDropContainer T="DropItem" Items="_items" ItemsSelector="@((item, dropzone) => item.Identifier == dropzone)"
+        <MudDropContainer T="DropItem" Items="_dropzoneItems" ItemsSelector="@((item, dropzone) => item.Identifier == dropzone)"
                           ItemDropped="@ItemUpdated" Class="d-flex flex-wrap flex-grow-1" Style="height: 100%">
             <ChildContent>
                 <MudStack Row Spacing="2" Class="d-flex flex-grow-1">
@@ -41,27 +41,39 @@
         </MudDropContainer>
     };
 
-    private void ItemUpdated(MudItemDropInfo<DropItem> dropItem)
+    private void ItemUpdated(MudItemDropInfo<DropItem> dropItemInfo)
     {
-        Logger.LogInformation("Item dropped START");
-        dropItem.Item.Identifier = dropItem.DropzoneIdentifier;
-        dropItem.Item.Order = dropItem.IndexInZone;
+        var item = dropItemInfo.Item;
+        if (item == null)
+        {
+            Logger.LogError("Dropped item is NULL");
+            return;
+        }
 
-        var orderedItemsInBuilderZone = _items
+        item.Identifier = dropItemInfo.DropzoneIdentifier;
+        item.Order = dropItemInfo.IndexInZone;
+
+        foreach (var dropItem in _dropzoneItems.Where(x => x.Identifier == "builder" && x.Order >= item.Order && x != item))
+        {
+            dropItem.Order++;
+            // Logger.LogInformation("Increasing the order of dropItem with name = {name}: {oldOrder} => {newOrder}", dropItem.Name, dropItem.Order - 1, dropItem.Order);
+        }
+
+        var orderedItemsInBuilderZone = _dropzoneItems
                                         .Where(x => x.Identifier == "builder")
                                         .OrderBy(x => x.Order);
-        Logger.LogInformation("Item dropped. Order of items in in the builder area: {itemsInOrder}",
+        Logger.LogInformation("Item dropped. Order of items in in the builder area:\n{itemsInOrder}",
                               string.Join("\n", orderedItemsInBuilderZone.Select(item => $"{item.Order}: {item.Name}")));
     }
 
-    private List<DropItem> _items = new()
+    private List<DropItem> _dropzoneItems = new()
     {
         new DropItem
-            { Order = 1, Name = "Drag me!", Identifier = "templates" },
+            { Order = 1, Name = "Element X", Identifier = "templates" },
         new DropItem
-            { Order = 2, Name = "Or me!", Identifier = "templates" },
+            { Order = 2, Name = "Element Y", Identifier = "templates" },
         new DropItem
-            { Order = 3, Name = "Just Mud", Identifier = "templates" }
+            { Order = 3, Name = "Element Z", Identifier = "templates" }
     };
 
 
