@@ -16,8 +16,6 @@
 
 @code {
 
-    [Inject] ILogger<PdfBuilder> Logger { get; init; } = null!;
-
     private RenderFragment BuildBuilderView() => __builder =>
     {
         <MudDropContainer T="DropItem" Items="_dropzoneItems" ItemsSelector="@((item, dropzone) => item.Identifier == dropzone)"
@@ -25,11 +23,11 @@
             <ChildContent>
                 <MudStack Row Spacing="2" Class="d-flex flex-grow-1">
                     <MudItem xs="4">
-                        <MudDropZone T="DropItem" Identifier="templates" Style="background-color: lightgrey; flex-grow: 1; height: 100%">
+                        <MudDropZone T="DropItem" Identifier="@AREA_NAME_TEMPLATES" Style="background-color: lightgrey; flex-grow: 1; height: 100%">
                         </MudDropZone>
                     </MudItem>
                     <MudItem xs="8">
-                        <MudDropZone T="DropItem" Identifier="builder" AllowReorder Style="background-color: red; flex-grow: 1; height: 100%">
+                        <MudDropZone T="DropItem" Identifier="@AREA_NAME_BUILDER" AllowReorder Style="background-color: red; flex-grow: 1; height: 100%">
                         </MudDropZone>
                     </MudItem>
                 </MudStack>
@@ -40,50 +38,4 @@
 
         </MudDropContainer>
     };
-
-    private void ItemUpdated(MudItemDropInfo<DropItem> dropItemInfo)
-    {
-        var item = dropItemInfo.Item;
-        if (item == null)
-        {
-            Logger.LogError("Dropped item is NULL");
-            return;
-        }
-
-        item.Identifier = dropItemInfo.DropzoneIdentifier;
-        item.Order = dropItemInfo.IndexInZone;
-
-        foreach (var dropItem in _dropzoneItems.Where(x => x.Identifier == "builder" && x.Order >= item.Order && x != item))
-        {
-            dropItem.Order++;
-            // Logger.LogInformation("Increasing the order of dropItem with name = {name}: {oldOrder} => {newOrder}", dropItem.Name, dropItem.Order - 1, dropItem.Order);
-        }
-
-        var orderedItemsInBuilderZone = _dropzoneItems
-                                        .Where(x => x.Identifier == "builder")
-                                        .OrderBy(x => x.Order);
-        Logger.LogInformation("Item dropped. Order of items in in the builder area:\n{itemsInOrder}",
-                              string.Join("\n", orderedItemsInBuilderZone.Select(item => $"{item.Order}: {item.Name}")));
-    }
-
-    private List<DropItem> _dropzoneItems = new()
-    {
-        new DropItem
-            { Order = 1, Name = "Element X", Identifier = "templates" },
-        new DropItem
-            { Order = 2, Name = "Element Y", Identifier = "templates" },
-        new DropItem
-            { Order = 3, Name = "Element Z", Identifier = "templates" }
-    };
-
-
-    public class DropItem
-    {
-        public int Order { get; set; }
-
-        public string Name { get; init; }
-
-        public string Identifier { get; set; }
-    }
-
 }
