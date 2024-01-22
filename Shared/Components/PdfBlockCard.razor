@@ -1,0 +1,16 @@
+﻿<MudCard Outlined Class="">
+    <MudCardContent Class="pb-0">
+        <MudText>@Title</MudText>
+        <MudText Typo="Typo.body2">@Description</MudText>
+    </MudCardContent>
+    <MudCardActions Class="py-0" Style="justify-content: flex-end;">
+        <MudIconButton OnClick="@(() => OnClickEventHandler("card type"))" Icon="@Icons.Material.Filled.Add">Add</MudIconButton>
+    </MudCardActions>
+</MudCard>
+
+@code {
+
+    [Parameter] public string Title { get; set; }
+    [Parameter] public string Description { get; set; }
+    [Parameter] public  Action<string> OnClickEventHandler { get; set; }
+}

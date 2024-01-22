@@ -4,8 +4,9 @@
     flex-direction: column;
 }
 
-.page-part-container {
+.take-all-height {
     display: flex;
     flex-grow: 1; /* Grow to fill the container */
+    height: 100%;
     overflow: hidden; /* Hide overflow */
 }

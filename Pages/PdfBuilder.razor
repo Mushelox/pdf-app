@@ -1,12 +1,20 @@
 ﻿@page "/pdfBuilder"
+@using PdfApp.Shared.Components
 
 <div class="page-container">
-    <MudGrid Spacing="2" Style="height: 100%; flex-grow: 1">
-        <MudItem Class="page-part-container" xs="8">
-            @BuildBuilderView()
+    <MudGrid Spacing="2" Style="flex-grow: 1">
+        <MudItem Class="take-all-height" xs="8">
+            <MudStack Row Spacing="2" Class="d-flex flex-grow-1" Style="height: 100%">
+                <MudItem xs="4">
+                    @BuildTemplatesView()
+                </MudItem>
+                <MudItem xs="8">
+                    @BuildBuilderView()
+                </MudItem>
+            </MudStack>
         </MudItem>
 
-        <MudItem Class="page-part-container" xs="4">
+        <MudItem Class="take-all-height" xs="4">
             <MudPaper Style="display: flex; flex-grow: 1; height: 100%;">
                 <h1>PREVIEW</h1>
             </MudPaper>
@@ -16,26 +24,35 @@
 
 @code {
 
+    private RenderFragment BuildTemplatesView() => __builder =>
+    {
+        <MudPaper Class="d-flex flex-grow-1" Style="height: 100%">
+            <MudStack Spacing="4" Style="padding: 1em; width: 100%">
+                <PdfBlockCard Title="Test" Description="TestDescription" OnClickEventHandler="OnTemplateBlockClick"></PdfBlockCard>
+                <PdfBlockCard Title="Test2" Description="TestDescription2" OnClickEventHandler="OnTemplateBlockClick"></PdfBlockCard>
+                <PdfBlockCard Title="Test3" Description="TestDescription3" OnClickEventHandler="OnTemplateBlockClick"></PdfBlockCard>
+            </MudStack>
+        </MudPaper>
+    };
+
     private RenderFragment BuildBuilderView() => __builder =>
     {
         <MudDropContainer T="DropItem" Items="_dropzoneItems" ItemsSelector="@((item, dropzone) => item.Identifier == dropzone)"
                           ItemDropped="@ItemUpdated" Class="d-flex flex-wrap flex-grow-1" Style="height: 100%">
             <ChildContent>
-                <MudStack Row Spacing="2" Class="d-flex flex-grow-1">
-                    <MudItem xs="4">
-                        <MudDropZone T="DropItem" Identifier="@AREA_NAME_TEMPLATES" Style="background-color: lightgrey; flex-grow: 1; height: 100%">
-                        </MudDropZone>
-                    </MudItem>
-                    <MudItem xs="8">
-                        <MudDropZone T="DropItem" Identifier="@AREA_NAME_BUILDER" AllowReorder Style="background-color: red; flex-grow: 1; height: 100%">
-                        </MudDropZone>
-                    </MudItem>
-                </MudStack>
+                <MudDropZone T="DropItem" Identifier="@AREA_NAME_BUILDER" AllowReorder Style="background-color: red; flex-grow: 1; height: 100%">
+                </MudDropZone>
             </ChildContent>
             <ItemRenderer>
-                <MudPaper Elevation="25" Class="pa-4 mb-4">@context.Name</MudPaper>
+                <MudPaper Elevation="25" Class="pa-4 mb-4">@context.Name GUID: @context.Guid</MudPaper>
             </ItemRenderer>
 
         </MudDropContainer>
     };
+
 }
+
+@code {
+
+}
+
