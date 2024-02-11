@@ -1,0 +1,12 @@
+.page-container {
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.take-all-height {
+    display: flex;
+    flex-grow: 1; /* Grow to fill the container */
+    height: 100%;
+    overflow: hidden; /* Hide overflow */
+}
