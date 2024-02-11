@@ -4,6 +4,11 @@
 <div class="page-container">
     <MudGrid Spacing="2" Style="flex-grow: 1">
         <MudItem Class="take-all-height" xs="8">
+            <MudPaper Outlined Elevation="25">
+                <MudToolBar>
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@OnGenerateClick">Generate</MudButton>
+                </MudToolBar>
+            </MudPaper>
             <MudStack Row Spacing="2" Class="d-flex flex-grow-1" Style="height: 100%">
                 <MudItem xs="4">
                     @BuildTemplatesView()
@@ -37,7 +42,7 @@
 
     private RenderFragment BuildBuilderView() => __builder =>
     {
-        <MudDropContainer T="DropItem" Items="_dropzoneItems" ItemsSelector="@((item, dropzone) => item.Identifier == dropzone)"
+        <MudDropContainer @ref="@dropContainerRef" T="DropItem" Items="_dropzoneItems" ItemsSelector="@((item, dropzone) => item.Identifier == dropzone)"
                           ItemDropped="@ItemUpdated" Class="d-flex flex-wrap flex-grow-1" Style="height: 100%">
             <ChildContent>
                 <MudDropZone T="DropItem" Identifier="@AREA_NAME_BUILDER" AllowReorder Style="background-color: red; flex-grow: 1; height: 100%">
@@ -51,8 +56,3 @@
     };
 
 }
-
-@code {
-
-}
-
