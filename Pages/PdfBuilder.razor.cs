@@ -1,13 +1,16 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using MudBlazor.Utilities;
+using PdfApp.Shared.Models.PdfBuilder.Elements;
+using PdfApp.Shared.Services;
 
 namespace PdfApp.Pages;
 
 public partial class PdfBuilder
 {
-    [Inject]
-    private ILogger<PdfBuilder> Logger { get; init; } = null!;
+    [Inject] private ILogger<PdfBuilder> Logger { get; init; } = null!;
+
+    [Inject] private PdfService PdfService { get; init; } = null!;
 
     private const string AREA_NAME_TEMPLATES = "templates";
     private const string AREA_NAME_BUILDER = "builder";
@@ -61,9 +64,14 @@ public partial class PdfBuilder
 
 #endregion
 
-    private void OnGenerateClick()
+    private async void OnGenerateClick()
     {
-        throw new NotImplementedException();
+        var elements = new List<PdfElement>()
+        {
+            new HeaderElement()
+        };
+        
+        await PdfService.GenerateAndDisplayPdf(elements);
     }
 
     public class DropItem
