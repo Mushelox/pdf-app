@@ -36,7 +36,6 @@
 	  <None Update="Pages\PdfBuilder.razor.css">
 	    <DependentUpon>PdfBuilder.razor.razor</DependentUpon>
 	  </None>
-	  <None Include="wwwroot\pdfServiceUtility.js" />
 	</ItemGroup>
 	
 	<ItemGroup>

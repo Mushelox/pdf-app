@@ -5,6 +5,7 @@ using PdfApp.Shared.Models.PdfBuilder.Elements;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using Colors = QuestPDF.Helpers.Colors;
 
 namespace PdfApp.Shared.Services;
 
@@ -38,9 +39,22 @@ public class PdfService
             handler.Page(page =>
             {
                 page.Size(PageSizes.A4);
-                page.Header().Text("Header");
+                page.MarginHorizontal(40);
+                page.MarginVertical(60);
+
+                page.Header()
+                    .Height(60)
+                    .Background(Colors.Grey.Lighten1)
+                    .AlignCenter()
+                    .AlignMiddle()
+                    .Text(text =>
+                    {
+                        text.Span("Header")
+                            .FontSize(40)
+                            .Superscript();
+                    });
+                    
                 page.Footer().Text("Footer");
-                // margins, colors
 
                 contentContainer = page.Content();
                 foreach (var element in pdfElements)
