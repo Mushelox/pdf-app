@@ -1,7 +1,6 @@
 ﻿using Microsoft.JSInterop;
 using MudBlazor;
-using PdfApp.Shared.Models.PdfBuilder;
-using PdfApp.Shared.Models.PdfBuilder.Elements;
+using PdfApp.Shared.Models.PdfBuilderElements.Elements;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -20,7 +19,7 @@ public class PdfService
         _logger = logger;
     }
 
-    public async Task GenerateAndDisplayPdf(IEnumerable<PdfElement> pdfElements)
+    public async Task GenerateAndDisplayPdf(IEnumerable<PdfElementBase> pdfElements)
     {
         byte[] pdfBytes = GeneratePdf(pdfElements);
         string pdfBase64 = Convert.ToBase64String(pdfBytes);
@@ -30,7 +29,7 @@ public class PdfService
 
     }
 
-    public byte[] GeneratePdf(IEnumerable<PdfElement> pdfElements)
+    public byte[] GeneratePdf(IEnumerable<PdfElementBase> pdfElements)
     {
         _logger.LogInformation("PreparePdfDocument started");
         IContainer? contentContainer = default;

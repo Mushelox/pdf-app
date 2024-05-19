@@ -1,5 +1,7 @@
 ﻿@page "/pdfBuilder"
 @using PdfApp.Shared.Components
+@using PdfApp.Shared.Enums
+@using PdfApp.Shared.Models
 
 <div class="page-container">
     <MudGrid Spacing="2" Style="flex-grow: 1">
@@ -27,23 +29,30 @@
     </MudGrid>
 </div>
 
+@* ReSharper disable UnusedParameter.Local *@
+@* ReSharper disable InconsistentNaming *@
 @code {
 
     private RenderFragment BuildTemplatesView() => __builder =>
     {
         <MudPaper Class="d-flex flex-grow-1" Style="height: 100%">
+            
+            
             <MudStack Spacing="4" Style="padding: 1em; width: 100%">
-                <PdfBlockCard Title="Test" Description="TestDescription" OnClickEventHandler="OnTemplateBlockClick"></PdfBlockCard>
-                <PdfBlockCard Title="Test2" Description="TestDescription2" OnClickEventHandler="OnTemplateBlockClick"></PdfBlockCard>
-                <PdfBlockCard Title="Test3" Description="TestDescription3" OnClickEventHandler="OnTemplateBlockClick"></PdfBlockCard>
+                <PdfBlockCard Data=@(new BlockElementData("Header", "Header element", ElementType.Header)) OnClickEventHandler="OnTemplateBlockClick"/>
+                <PdfBlockCard Data=@(new BlockElementData("Normal", "Regular content element", ElementType.Regular)) OnClickEventHandler="OnTemplateBlockClick"/>
+                <PdfBlockCard Data=@(new BlockElementData("Footer", "Footer element", ElementType.Footer)) OnClickEventHandler="OnTemplateBlockClick"/>
             </MudStack>
         </MudPaper>
     };
-
+    
     private RenderFragment BuildBuilderView() => __builder =>
     {
-        <MudDropContainer @ref="@dropContainerRef" T="DropItem" Items="_dropzoneItems" ItemsSelector="@((item, dropzone) => item.Identifier == dropzone)"
-                          ItemDropped="@ItemUpdated" Class="d-flex flex-wrap flex-grow-1" Style="height: 100%">
+        <MudDropContainer @ref="@_dropContainerRef" T="DropItem" Items="_dropzoneItems" 
+                          ItemsSelector="@((item, dropzone) => item.DropZoneIdentifier == dropzone)"
+                          ItemIsDisabled="@(item => item.Type != ElementType.Regular)"
+                          ItemDropped="@ItemUpdated"
+                          Class="d-flex flex-wrap flex-grow-1" Style="height: 100%">
             <ChildContent>
                 <MudDropZone T="DropItem" Identifier="@AREA_NAME_BUILDER" AllowReorder Style="background-color: red; flex-grow: 1; height: 100%">
                 </MudDropZone>
@@ -56,3 +65,5 @@
     };
 
 }
+@* ReSharper restore UnusedParameter.Local *@
+@* ReSharper restore InconsistentNaming *@

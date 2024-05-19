@@ -1,51 +1,101 @@
 ﻿using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using MudBlazor.Utilities;
-using PdfApp.Shared.Models.PdfBuilder.Elements;
+using PdfApp.Shared.Enums;
+using PdfApp.Shared.Extensions;
+using PdfApp.Shared.Models;
+using PdfApp.Shared.Models.PdfBuilderElements.Elements;
 using PdfApp.Shared.Services;
 
 namespace PdfApp.Pages;
 
+// ReSharper disable once ClassNeverInstantiated.Global
 public partial class PdfBuilder
 {
     [Inject] private ILogger<PdfBuilder> Logger { get; init; } = null!;
 
     [Inject] private PdfService PdfService { get; init; } = null!;
 
-    private const string AREA_NAME_TEMPLATES = "templates";
+    [Inject] private IDialogService DialogService { get; init; } = null!;
+
     private const string AREA_NAME_BUILDER = "builder";
 
-    private List<DropItem> _dropzoneItems = new();
-    private MudDropContainer<DropItem> dropContainerRef;
+    private readonly List<DropItem> _dropzoneItems = new();
+    private MudDropContainer<DropItem> _dropContainerRef = null!;
 
-    private void ItemUpdated(MudItemDropInfo<DropItem> dropInfo)
+    private async Task ItemUpdated(MudItemDropInfo<DropItem> dropInfo)
     {
         var droppedItem = dropInfo.Item!;
-        droppedItem.Identifier = dropInfo.DropzoneIdentifier;
-        droppedItem.Index = dropInfo.IndexInZone;
+        int dropIndex = dropInfo.IndexInZone;
 
-        _dropzoneItems.UpdateOrder(dropInfo, item => item.Index, 1);
+        if (ValidDropIndex(dropIndex))
+        {
+            droppedItem.DropZoneIdentifier = dropInfo.DropzoneIdentifier;
+            droppedItem.Index = dropInfo.IndexInZone;
+            _dropzoneItems.UpdateOrder(dropInfo, item => item.Index, 1);
 
-        var sortedDropItems = _dropzoneItems.OrderBy(x => x.Index);
-        Logger.LogInformation("Item dropped. Order in dropzone: {data}", sortedDropItems.Select(x => $"\n{x.Index}: {x.Guid}"));
+            var sortedDropItems = _dropzoneItems.OrderBy(x => x.Index);
+            Logger.LogInformation("Item dropped. Order in dropzone: {data}", sortedDropItems.Select(x => $"\n{x.Index}: {x.Guid}"));
+        }
+        else
+        {
+            await DialogService.ShowInfoDialog("Invalid placement", "Header and footer elements must always occupy the first or last position respectively.");
+            StateHasChanged();
+            _dropContainerRef.Refresh();
+        }
     }
 
-    private void OnTemplateBlockClick(string cardType)
+    private async Task OnTemplateBlockClick(BlockElementData data)
     {
-        var newItem = new DropItem
+        if (!CanAddToDropzone(data.Type))
         {
-            Name = cardType,
-            Identifier = AREA_NAME_BUILDER,
-            Index = _dropzoneItems.Count
-        };
+            await DialogService.ShowInfoDialog("Duplicate element", $"There can only be one {(data.Type == ElementType.Header ? "header" : "footer")} element.");
+            return;
+        }
 
-        _dropzoneItems.Add(newItem);
+        var newItem = new DropItem(_dropzoneItems.Count, data.Title, data.Type, AREA_NAME_BUILDER);
+
+        AddItemToDropzone(newItem);
 
         StateHasChanged();
-        dropContainerRef.Refresh();
+        _dropContainerRef.Refresh();
         Logger.LogInformation("Item dropped. Order in dropzone: {data}", _dropzoneItems
                                                                          .OrderBy(x => x.Index)
-                                                                         .Select(x => $"\n{x.Index}: {x.Guid}"));
+                                                                         .Select(x => $"\n{x.Index}: Type = {x.Type} | GUID: {x.Guid}"));
+    }
+
+    private bool CanAddToDropzone(ElementType type)
+    {
+        if (type == ElementType.Regular)
+            return true;
+
+        return _dropzoneItems.All(x => x.Type != type);
+    }
+
+    private bool ValidDropIndex(int index)
+    {
+        Logger.LogInformation("Index = {index} | header present = {header} | footer present = {footer}", index, DropzoneContainsHeader, DropzoneContainsFooter);
+        if (index == 0 && DropzoneContainsHeader)
+            return false;
+        if (index == _dropzoneItems.Count - 1 && DropzoneContainsFooter)
+            return false;
+
+        return true;
+    }
+
+    private void AddItemToDropzone(DropItem item)
+    {
+        if (item.Type == ElementType.Regular)
+        {
+            if (DropzoneContainsFooter)
+                _dropzoneItems.Insert(_dropzoneItems.Count - 1, item);
+            else
+                _dropzoneItems.Add(item);
+        }
+        else if (item.Type == ElementType.Header)
+            _dropzoneItems.Insert(0, item);
+        else
+            _dropzoneItems.Insert(_dropzoneItems.Count, item);
     }
 
 #region UTILITY
@@ -55,7 +105,7 @@ public partial class PdfBuilder
     /// <returns>Collection of items in builder area starting from <paramref name="startIndex"/></returns>
     private IEnumerable<DropItem> ItemsInBuilderArea(int startIndex = 0, bool ordered = false)
     {
-        var items = _dropzoneItems.Where(x => x.Identifier == AREA_NAME_BUILDER && x.Index >= startIndex);
+        var items = _dropzoneItems.Where(x => x.DropZoneIdentifier == AREA_NAME_BUILDER && x.Index >= startIndex);
         if (ordered)
             items = items.OrderBy(x => x.Index);
 
@@ -66,22 +116,15 @@ public partial class PdfBuilder
 
     private async void OnGenerateClick()
     {
-        var elements = new List<PdfElement>()
+        var elements = new List<PdfElementBase>
         {
             new HeaderElement()
         };
-        
+
         await PdfService.GenerateAndDisplayPdf(elements);
     }
 
-    public class DropItem
-    {
-        public int Index { get; set; }
+    private bool DropzoneContainsHeader => _dropzoneItems[0].Type == ElementType.Header;
 
-        public string Name { get; init; }
-
-        public string Identifier { get; set; }
-
-        public Guid Guid = Guid.NewGuid();
-    }
+    private bool DropzoneContainsFooter => _dropzoneItems[^1].Type == ElementType.Footer;
 }
