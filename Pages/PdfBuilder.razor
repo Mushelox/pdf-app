@@ -2,6 +2,7 @@
 @using PdfApp.Shared.Components
 @using PdfApp.Shared.Enums
 @using PdfApp.Shared.Models
+@using PdfApp.Shared.Components.PdfBuilderBlockCards
 
 <div class="page-container">
     <MudGrid Spacing="2" Style="flex-grow: 1">
@@ -39,9 +40,9 @@
             
             
             <MudStack Spacing="4" Style="padding: 1em; width: 100%">
-                <PdfBlockCard Data=@(new BlockElementData("Header", "Header element", ElementType.Header)) OnClickEventHandler="OnTemplateBlockClick"/>
-                <PdfBlockCard Data=@(new BlockElementData("Normal", "Regular content element", ElementType.Regular)) OnClickEventHandler="OnTemplateBlockClick"/>
-                <PdfBlockCard Data=@(new BlockElementData("Footer", "Footer element", ElementType.Footer)) OnClickEventHandler="OnTemplateBlockClick"/>
+                <PdfTemplateCard Data=@(new BlockElementData("Header", "Header element", ElementType.Header)) OnClickEventHandler="OnTemplateBlockClick"/>
+                <PdfTemplateCard Data=@(new BlockElementData("Normal", "Regular content element", ElementType.Regular)) OnClickEventHandler="OnTemplateBlockClick"/>
+                <PdfTemplateCard Data=@(new BlockElementData("Footer", "Footer element", ElementType.Footer)) OnClickEventHandler="OnTemplateBlockClick"/>
             </MudStack>
         </MudPaper>
     };
@@ -58,7 +59,7 @@
                 </MudDropZone>
             </ChildContent>
             <ItemRenderer>
-                <MudPaper Elevation="25" Class="pa-4 mb-4">@context.Name GUID: @context.Guid</MudPaper>
+                <PdfBuilderCardTest ItemData="context" Callbacks="_builderItemsCallbacks"/>
             </ItemRenderer>
 
         </MudDropContainer>

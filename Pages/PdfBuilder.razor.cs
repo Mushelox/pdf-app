@@ -4,6 +4,7 @@ using MudBlazor.Utilities;
 using PdfApp.Shared.Enums;
 using PdfApp.Shared.Extensions;
 using PdfApp.Shared.Models;
+using PdfApp.Shared.Models.PdfBuilderElements;
 using PdfApp.Shared.Models.PdfBuilderElements.Elements;
 using PdfApp.Shared.Services;
 
@@ -23,6 +24,15 @@ public partial class PdfBuilder
     private readonly List<DropItem> _dropzoneItems = new();
     private MudDropContainer<DropItem> _dropContainerRef = null!;
 
+    private PdfBuilderCardCallbacks _builderItemsCallbacks;
+
+
+    protected override void OnInitialized()
+    {
+        _builderItemsCallbacks = new PdfBuilderCardCallbacks(OnDuplicateBuilderItemClick, OnDeleteBuilderItemClick);
+    }
+
+
     private async Task ItemUpdated(MudItemDropInfo<DropItem> dropInfo)
     {
         var droppedItem = dropInfo.Item!;
@@ -33,15 +43,11 @@ public partial class PdfBuilder
             droppedItem.DropZoneIdentifier = dropInfo.DropzoneIdentifier;
             droppedItem.Index = dropInfo.IndexInZone;
             _dropzoneItems.UpdateOrder(dropInfo, item => item.Index, 1);
-
-            var sortedDropItems = _dropzoneItems.OrderBy(x => x.Index);
-            Logger.LogInformation("Item dropped. Order in dropzone: {data}", sortedDropItems.Select(x => $"\n{x.Index}: {x.Guid}"));
         }
         else
         {
             await DialogService.ShowInfoDialog("Invalid placement", "Header and footer elements must always occupy the first or last position respectively.");
-            StateHasChanged();
-            _dropContainerRef.Refresh();
+            RefreshDropContainer();
         }
     }
 
@@ -56,9 +62,8 @@ public partial class PdfBuilder
         var newItem = new DropItem(_dropzoneItems.Count, data.Title, data.Type, AREA_NAME_BUILDER);
 
         AddItemToDropzone(newItem);
+        RefreshDropContainer();
 
-        StateHasChanged();
-        _dropContainerRef.Refresh();
         Logger.LogInformation("Item dropped. Order in dropzone: {data}", _dropzoneItems
                                                                          .OrderBy(x => x.Index)
                                                                          .Select(x => $"\n{x.Index}: Type = {x.Type} | GUID: {x.Guid}"));
@@ -112,6 +117,16 @@ public partial class PdfBuilder
         return items;
     }
 
+    private bool DropzoneContainsHeader => _dropzoneItems[0].Type == ElementType.Header;
+
+    private bool DropzoneContainsFooter => _dropzoneItems[^1].Type == ElementType.Footer;
+
+    private void RefreshDropContainer()
+    {
+        StateHasChanged();
+        _dropContainerRef.Refresh();
+    }
+
 #endregion
 
     private async void OnGenerateClick()
@@ -124,7 +139,11 @@ public partial class PdfBuilder
         await PdfService.GenerateAndDisplayPdf(elements);
     }
 
-    private bool DropzoneContainsHeader => _dropzoneItems[0].Type == ElementType.Header;
+    private void OnDeleteBuilderItemClick(DropItem item)
+    {
+    }
 
-    private bool DropzoneContainsFooter => _dropzoneItems[^1].Type == ElementType.Footer;
+    private void OnDuplicateBuilderItemClick(DropItem item)
+    {
+    }
 }
