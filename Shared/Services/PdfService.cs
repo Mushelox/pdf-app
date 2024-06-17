@@ -33,9 +33,9 @@ public class PdfService
     {
         _logger.LogInformation("PreparePdfDocument started");
         IContainer? contentContainer = default;
-        var document = Document.Create(handler =>
+        var document = Document.Create(documentContainer =>
         {
-            handler.Page(page =>
+            documentContainer.Page(page =>
             {
                 page.Size(PageSizes.A4);
                 page.MarginHorizontal(40);
@@ -56,10 +56,11 @@ public class PdfService
                 page.Footer().Text("Footer");
 
                 contentContainer = page.Content();
-                foreach (var element in pdfElements)
+                contentContainer.Column(column =>
                 {
-                    element.Draw(contentContainer);
-                }
+                    foreach (var element in pdfElements)
+                        column.Item().Element(element.Draw);    
+                });
             });
         });
         

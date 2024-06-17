@@ -133,7 +133,8 @@ public partial class PdfBuilder
     {
         var elements = new List<PdfElementBase>
         {
-            new HeaderElement()
+            new HeaderElement(),
+            new TextFieldElement()
         };
 
         await PdfService.GenerateAndDisplayPdf(elements);
