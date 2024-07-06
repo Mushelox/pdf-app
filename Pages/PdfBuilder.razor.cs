@@ -142,9 +142,15 @@ public partial class PdfBuilder
 
     private void OnDeleteBuilderItemClick(DropItem item)
     {
+        _dropzoneItems.Remove(item);
+        RefreshDropContainer();
     }
 
     private void OnDuplicateBuilderItemClick(DropItem item)
     {
+        //TODO in future the duplicate interaction should duplicate all current block card values set by user
+        var copy = item.CreateCopy();
+        AddItemToDropzone(copy);
+        RefreshDropContainer();
     }
 }

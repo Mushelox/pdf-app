@@ -9,7 +9,9 @@
         <MudItem Class="take-all-height" xs="8">
             <MudPaper Outlined Elevation="25">
                 <MudToolBar>
-                    <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@OnGenerateClick">Generate</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Success" OnClick="@OnGenerateClick" Disabled="@(_dropzoneItems.Count == 0)">
+                        Generate
+                    </MudButton>
                 </MudToolBar>
             </MudPaper>
             <MudStack Row Spacing="2" Class="d-flex flex-grow-1" Style="height: 100%">

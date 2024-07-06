@@ -22,4 +22,7 @@ public class DropItem
         Type = type;
         DropZoneIdentifier = dropZoneIdentifier;
     }
+    
+    
+    public DropItem CreateCopy() => new(Index + 1, Name, Type, DropZoneIdentifier);
 }
