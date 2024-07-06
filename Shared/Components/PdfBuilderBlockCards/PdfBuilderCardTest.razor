@@ -1,0 +1,19 @@
+﻿@inherits PdfBuilderCardBase
+
+@{
+    base.BuildRenderTree(__builder);
+}
+
+@code {
+
+    protected override RenderFragment BuildCardContent() => __builder =>
+    {
+        <h1>TEST CONTENT</h1>
+    };
+
+    protected override void OnRestoreClick()
+    {
+        throw new NotImplementedException();
+    }
+
+}

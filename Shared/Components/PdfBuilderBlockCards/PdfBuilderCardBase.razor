@@ -1,0 +1,31 @@
+﻿@using PdfApp.Shared.Models
+@using PdfApp.Shared.Models.PdfBuilderElements
+@using PdfApp.Shared.Enums
+<MudCard Outlined="true">
+    <MudCardHeader>
+        <MudText Typo="Typo.h6">@ItemData.Name</MudText>
+    </MudCardHeader>
+    <MudCardContent>
+        @BuildCardContent()
+    </MudCardContent>
+    <MudCardActions>
+        <MudButtonGroup Variant="Variant.Filled">
+            @if (DuplicateEnabled)
+            {
+                <MudButton StartIcon="@Icons.Material.Filled.ContentCopy" Color="Color.Success" OnClick="@(() => Callbacks.Duplicate(ItemData))">Duplicate</MudButton>
+            }
+            <MudButton StartIcon="@Icons.Material.Filled.Restore" Color="Color.Warning" OnClick="@OnRestoreClick">Reset</MudButton>
+            <MudButton StartIcon="@Icons.Material.Filled.Delete" Color="Color.Error" OnClick="@(() => Callbacks.Delete(ItemData))">Delete</MudButton>
+        </MudButtonGroup>
+    </MudCardActions>
+</MudCard>
+
+@code {
+
+    [Parameter] [EditorRequired] public DropItem ItemData { get; set; } = null!;
+
+    [Parameter] [EditorRequired] public PdfBuilderCardCallbacks Callbacks { get; set; } = null!;
+
+    private bool DuplicateEnabled => ItemData.Type is not ElementType.Header and not ElementType.Footer;
+
+}

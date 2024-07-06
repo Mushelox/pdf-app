@@ -1,0 +1,18 @@
+﻿@using PdfApp.Shared.Models
+<MudCard Outlined Class="">
+    <MudCardContent Class="pb-0">
+        <MudText>@Data.Title</MudText>
+        <MudText Typo="Typo.body2">@Data.Description</MudText>
+    </MudCardContent>
+    <MudCardActions Class="py-0" Style="justify-content: flex-end;">
+        <MudIconButton OnClick="@(() => OnClickEventHandler(Data))" Icon="@Icons.Material.Filled.Add"/>
+    </MudCardActions>
+</MudCard>
+
+@code {
+
+    [Parameter] public BlockElementData Data { get; set; } = null!;
+
+    [Parameter] public Func<BlockElementData, Task> OnClickEventHandler { get; set; } = null!;
+
+}
