@@ -32,7 +32,7 @@ public class PdfService
     public byte[] GeneratePdf(IEnumerable<PdfElementBase> pdfElements)
     {
         _logger.LogInformation("PreparePdfDocument started");
-        IContainer? contentContainer = default;
+        IContainer? contentContainer;
         var document = Document.Create(documentContainer =>
         {
             documentContainer.Page(page =>
