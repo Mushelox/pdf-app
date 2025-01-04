@@ -1,7 +1,4 @@
-﻿@using PdfApp.Shared.Models
-@using PdfApp.Shared.Models.PdfBuilderElements
-@using PdfApp.Shared.Enums
-<MudCard Outlined="true">
+﻿<MudCard Outlined="true">
     <MudCardHeader>
         <MudText Typo="Typo.h6">@ItemData.Name</MudText>
     </MudCardHeader>
@@ -19,13 +16,3 @@
         </MudButtonGroup>
     </MudCardActions>
 </MudCard>
-
-@code {
-
-    [Parameter] [EditorRequired] public DropItem ItemData { get; set; } = null!;
-
-    [Parameter] [EditorRequired] public PdfBuilderCardCallbacks Callbacks { get; set; } = null!;
-
-    private bool DuplicateEnabled => ItemData.Type is not ElementType.Header and not ElementType.Footer;
-
-}
