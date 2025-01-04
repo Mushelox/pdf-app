@@ -1,0 +1,29 @@
+﻿@using PdfApp.Shared.Models.PdfBuilderElements.ElementSettings.Interfaces
+@inherits BuilderCardBase
+
+@{
+    base.BuildRenderTree(__builder);
+}
+
+@code {
+
+    protected override RenderFragment BuildCardContent() => __builder =>
+    {
+        <AreaSettingsComponent Settings=""/>
+    };
+
+    protected override void OnRestoreClick()
+    {
+        throw new NotImplementedException();
+    }
+
+    private class CardTextFieldSettings : IAreaSettings
+    {
+        public string BackgroundColorHex { get; set; }
+
+        public int Height { get; set; }
+
+        public int Width { get; set; }
+    }
+
+}

@@ -1,0 +1,34 @@
+﻿<MudTextField @bind-Value="@Value" Variant="Variant.Filled" Label="@Label" AutoGrow="@Autogrow" MaxLines="@MaxLines" HelperText="@HelperText"/>
+
+@code {
+
+    [Parameter]
+    public string Value
+    {
+        get => _internalValue;
+        set
+        {
+            if (_internalValue == value) return;
+            _internalValue = value;
+            ValueChanged.InvokeAsync(_internalValue);
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> ValueChanged { get; set; }
+    
+    [Parameter] [EditorRequired]
+    public string Label { get; set; } = null!;
+
+    [Parameter]
+    public bool Autogrow { get; set; }
+    
+    [Parameter]
+    public int MaxLines { get; set; } = 1;
+
+    [Parameter]
+    public string HelperText { get; set; } = string.Empty;
+    
+    
+    private string _internalValue = null!;
+}

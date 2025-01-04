@@ -2,7 +2,6 @@
 @using PdfApp.Shared.Components
 @using PdfApp.Shared.Enums
 @using PdfApp.Shared.Models
-@using PdfApp.Shared.Components.PdfBuilderBlockCards
 
 <div class="page-container">
     <MudGrid Spacing="2" Style="flex-grow: 1">
@@ -61,7 +60,7 @@
                 </MudDropZone>
             </ChildContent>
             <ItemRenderer>
-                <PdfBuilderCardTest ItemData="context" Callbacks="_builderItemsCallbacks"/>
+                <PdfBuilderCardTextField ItemData="context" Callbacks="_builderItemsCallbacks"/>
             </ItemRenderer>
 
         </MudDropContainer>

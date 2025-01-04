@@ -1,0 +1,9 @@
+﻿@using PdfApp.Shared.Models.PdfBuilderElements.ElementSettings.Interfaces
+
+<InputNumericField @bind-Value="@Settings.Width" Label="Element width"/>
+<InputNumericField @bind-Value="@Settings.Height" Label="Element height"/>
+
+@code {
+    [Parameter] [EditorRequired]
+    public IAreaSettings Settings { get; set; } = null!;
+}
